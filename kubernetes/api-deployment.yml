@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api-container
-        image: davidfordj98/task2app:latest
+        image: davidfordj98/task2jenkins:latest
         ports:
         - containerPort: 8080
 ---
