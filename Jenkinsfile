@@ -59,18 +59,18 @@ pipeline {
 			    script {
                     if (env.GIT_BRANCH == 'origin/main') {
                         sh '''
-                        kubectl apply -f ./kubernetes
+                        kubectl apply -f ./kubernetes -n prod
 
-                        kubectl set image deployment/api-deployment api-container=davidfordj98/task2jenkins:v${BUILD_NUMBER}
+                        kubectl set image deployment/api-deployment api-container=davidfordj98/task2jenkins:v${BUILD_NUMBER} -n prod
 			            '''
                     } else if (env.GIT_BRANCH == 'origin/dev') {
                         sh '''
-                        kubectl apply -f ./kubernetes
+                        kubectl apply -f ./kubernetes -n dev
 
-                        kubectl set image deployment/api-deployment api-container=davidfordj98/task2jenkins:v${BUILD_NUMBER}
+                        kubectl set image deployment/api-deployment api-container=davidfordj98/task2jenkins:v${BUILD_NUMBER} -n dev
 			            '''
                     } else {
-                        sh'echo "Unrecogognised branch"'
+                        sh'echo "Unrecognised branch"'
                     }
                 }
 			}
