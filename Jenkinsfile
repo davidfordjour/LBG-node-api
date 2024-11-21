@@ -1,29 +1,28 @@
 pipeline {
 	agent any
 	stages{
-		stage('Build Image'){
+		stage('Build'){
 			steps{
-			sh 'docker build -t gcr.io/lbg-210222/api-piers:latest -t gcr.io/lbg-210222/api-piers:build-$BUILD_NUMBER .'
-			}
-		}
-		stage('Push GCR'){
-			steps{
-            sh 'docker push gcr.io/lbg-210222/api-piers:build-$BUILD_NUMBER'
-			sh 'docker push gcr.io/lbg-210222/api-piers:latest'
-			}
-		}
-		stage('Reapply '){
-			steps{
-			sh '''kubectl apply -f ./kubernetes/nginx.yaml
-            kubectl apply -f ./kubernetes/api-deployment.yml
-			kubectl rollout restart deployment/api
+			sh '''
+			docker build -t davidfordj98/task2jenkins:latest -t davidfordj98/task2jenkins:v${BUILD_NUMBER} .
 			'''
 			}
 		}
-        stage('Cleanup'){
+		stage('Push'){
 			steps{
-            sh 'docker rmi gcr.io/lbg-210222/api-piers:latest'
-			sh 'docker rmi gcr.io/lbg-210222/api-piers:build-$BUILD_NUMBER'
+            sh '''
+            docker push davidfordj98/task2jenkins:latest
+            docker push davidfordj98/task2jenkins:v${BUILD_NUMBER}
+			'''
+			}
+		}
+		stage('Deploy'){
+			steps{
+			sh '''
+            kubectl apply -f ./kubernetes
+
+            kubectl set image deployment/api-deployment api-container=davidfordj98/task2jenkins:v${BUILD_NUMBER}
+			'''
 			}
 		}
     }
